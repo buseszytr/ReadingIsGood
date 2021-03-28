@@ -26,7 +26,8 @@ namespace ReadingIsGood.Infrastructure.Services
                     return new CustomerResponse("Already exist account");
                 }
 
-                customer.CustomerId = new Guid();
+                Guid customerId = Guid.NewGuid();
+                customer.CustomerId = customerId;
                 customerRepository.CreateCustomer(customer);
 
                 return new CustomerResponse(customer);

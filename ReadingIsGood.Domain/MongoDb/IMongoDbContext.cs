@@ -32,7 +32,7 @@ namespace ReadingIsGood.Domain.MongoDb
         Task<bool> AddOrUpdateAsync<T>(Expression<Func<T, bool>> filter, T item, string dbName = null, string colName = null);
         Task<bool> DeleteOneAsync<T>(Expression<Func<T, bool>> filter, string dbName = null, string colName = null);
         Task<List<R>> FindAllInRangeAsync<T, R>(List<object> array, string uniqueKey, Expression<Func<T, R>> projection = null, string dbName = null, string colName = null);
-        Task<List<R>> FindAsync<T, R>(Expression<Func<T, bool>> filter, Expression<Func<T, R>> projection = null, string dbName = null, string colName = null);
+        Task<List<R>> FindAsync<T, R>(Expression<Func<T, bool>> filter, string colName = null);
         Task<long> DeleteManyAsync<T>(Expression<Func<T, bool>> filter, string dbName = null, string colName = null);
         Task InsertManyAsync<T>(List<T> docs, bool isOrdered = false, string dbName = null, string colName = null);
         List<T> SortByDescending<T>(Expression<Func<T, object>> projection = null, Expression<Func<T, object>> sortExpression = null, int? limit = null, string collectionName = null, string dbName = null);

@@ -2,7 +2,6 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using ReadingIsGood.API.Resources;
 using ReadingIsGood.Domain.Models;
 using ReadingIsGood.Domain.ResponseModels;
@@ -10,7 +9,6 @@ using ReadingIsGood.Domain.Services;
 
 namespace ReadingIsGood.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class CustomerController : ControllerBase

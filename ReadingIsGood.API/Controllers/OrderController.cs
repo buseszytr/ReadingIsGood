@@ -10,7 +10,7 @@ using ReadingIsGood.Domain.Services;
 
 namespace ReadingIsGood.API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class OrderController : ControllerBase

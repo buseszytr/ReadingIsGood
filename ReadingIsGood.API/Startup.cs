@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
+using AutoMapper;
 using Microsoft.Extensions.Options;
 using ReadingIsGood.Domain.IMongoDb;
 using ReadingIsGood.Domain.MongoDb;
@@ -16,6 +17,7 @@ using ReadingIsGood.Domain.Repositories;
 using ReadingIsGood.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using ReadingIsGood.API.Mapping;
 using TokenHandler = ReadingIsGood.Infrastructure.Security.TokenHandler;
 
 namespace ReadingIsGood.API
@@ -55,8 +57,16 @@ namespace ReadingIsGood.API
             #region Jwt Token
 
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(jwtbeareroptions =>
+            services.Configure<TokenOptions>(Configuration.GetSection("TokenOptions"));
+
+            services.AddAuthentication(jwtbeareroptions =>
             {
+                jwtbeareroptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                jwtbeareroptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(jwtbeareroptions =>
+                {
+                    jwtbeareroptions.SaveToken = true;
                 jwtbeareroptions.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateAudience = false,
@@ -64,9 +74,23 @@ namespace ReadingIsGood.API
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = SignHandler.GetSecurityKey(tokenOptions.SecurityKey),
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.FromMinutes(10)
                 };
             });
+
+            #endregion
+
+            #region  Auto Mapper Configurations
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new UserMapping());
+                mc.AddProfile(new OrderMapping());
+                mc.AddProfile(new CustomerMapping());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             #endregion
 
@@ -74,26 +98,26 @@ namespace ReadingIsGood.API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ReadingIsGood.API", Version = "v1" });
-                //c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                //{
-                //    In = ParameterLocation.Header,
-                //    Description = "Access Token",
-                //    Name = "Authorization",
-                //    Type = SecuritySchemeType.ApiKey
-                //});
-                //c.AddSecurityRequirement(new OpenApiSecurityRequirement {
-                //{
-                //    new OpenApiSecurityScheme
-                //    {
-                //        Reference = new OpenApiReference
-                //        {
-                //            Type = ReferenceType.SecurityScheme,
-                //            Id = "Bearer"
-                //        }
-                //    },
-                //        new string[] { }
-                //    }
-                //});
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Access Token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                        new string[] { }
+                    }
+                });
             });
         }
 

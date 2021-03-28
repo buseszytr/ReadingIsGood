@@ -2,7 +2,7 @@
 
 namespace ReadingIsGood.Domain.Models
 {
-    public class OrderProduct : BaseModel
+    public class OrderProduct 
     {
         public Guid ProductId { get; set; }
         public string Name { get; set; }

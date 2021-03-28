@@ -21,19 +21,18 @@ namespace ReadingIsGood.Infrastructure.MongoDbContext
             database = client.GetDatabase(mongoDbconfig.DbName);
         }
 
-        IMongoCollection<T> GetCollection<T>(string dbName, string collectionName)
+        IMongoCollection<T> GetCollection<T>(string collectionName)
         {
-            var db = string.IsNullOrWhiteSpace(dbName) ? database : client.GetDatabase(dbName);
-            return db.GetCollection<T>(collectionName);
+            return database.GetCollection<T>(collectionName);
         }
 
         public void DeleteOne<T>(Expression<Func<T, bool>> expression, string collectionName = null)
         {
-            GetCollection<T>(null, collectionName).DeleteOne(expression);
+            GetCollection<T>(collectionName).DeleteOne(expression);
         }
         public void DeleteMany<T>(PropertyInfo propertyInfo, List<T> items, string collectionName = null)
         {
-            var collection = GetCollection<T>(null, collectionName);
+            var collection = GetCollection<T>(collectionName);
             FilterDefinition<T> filter = null;
             foreach (var item in items)
             {
@@ -47,76 +46,76 @@ namespace ReadingIsGood.Infrastructure.MongoDbContext
         }
         public List<T> Find<T>(Expression<Func<T, bool>> filter, Expression<Func<T, object>> projection = null, string collectionName = null, string dbName = null)
         {
-            var findFilter = GetCollection<T>(dbName, collectionName).Find(filter);
+            var findFilter = GetCollection<T>(collectionName).Find(filter);
             if (projection != null)
                 findFilter.Project(projection);
             return findFilter.ToList();
         }
         public List<T> SortByDescending<T>(Expression<Func<T, object>> projection = null, Expression<Func<T, object>> sortExpression = null, int? limit = null, string collectionName = null, string dbName = null)
         {
-            var findFilter = GetCollection<T>(dbName, collectionName).Find(Builders<T>.Filter.Empty).SortByDescending(sortExpression).Limit(limit);
+            var findFilter = GetCollection<T>(collectionName).Find(Builders<T>.Filter.Empty).SortByDescending(sortExpression).Limit(limit);
             if (projection != null)
                 findFilter.Project(projection);
             return findFilter.ToList();
         }
         public List<T> SortBy<T>(Expression<Func<T, object>> projection = null, Expression<Func<T, object>> sortExpression = null, int? limit = null, string collectionName = null, string dbName = null)
         {
-            var findFilter = GetCollection<T>(dbName, collectionName).Find(Builders<T>.Filter.Empty).SortBy(sortExpression).Limit(limit);
+            var findFilter = GetCollection<T>(collectionName).Find(Builders<T>.Filter.Empty).SortBy(sortExpression).Limit(limit);
             if (projection != null)
                 findFilter.Project(projection);
             return findFilter.ToList();
         }
         public List<T> FindAll<T>(Expression<Func<T, object>> projection = null, string collectionName = null)
         {
-            var findFilter = GetCollection<T>(null, collectionName).Find(Builders<T>.Filter.Empty);
+            var findFilter = GetCollection<T>(collectionName).Find(Builders<T>.Filter.Empty);
             if (projection != null)
                 findFilter.Project(projection);
             return findFilter.ToList();
         }
         public List<T> FindAllInRange<T>(List<object> array, string uniqueKey, Expression<Func<T, object>> projection = null, string collectionName = null)
         {
-            var findFilter = GetCollection<T>(null, collectionName).Find(Builders<T>.Filter.AnyIn(uniqueKey, array));
+            var findFilter = GetCollection<T>(collectionName).Find(Builders<T>.Filter.AnyIn(uniqueKey, array));
             if (projection != null)
                 findFilter.Project(projection);
             return findFilter.ToList();
         }
         public void InsertMany<T>(List<T> item, string collectionName = null)
         {
-            GetCollection<T>(null, collectionName).InsertMany(item);
+            GetCollection<T>(collectionName).InsertMany(item);
         }
         public void InsertOne<T>(T item, string collectionName = null)
         {
-            GetCollection<T>(null, collectionName).InsertOne(item);
+            GetCollection<T>(collectionName).InsertOne(item);
         }
         public Task InsertOneAsync<T>(T item, string collectionName = null)
         {
-            return GetCollection<T>(null, collectionName).InsertOneAsync(item);
+            return GetCollection<T>(collectionName).InsertOneAsync(item);
         }
         public void UpdateOne<T, TValuefield>(Expression<Func<T, bool>> expression,
             Expression<Func<T, TValuefield>> valueField, TValuefield item, string collectionName = null)
         {
-            GetCollection<T>(null, collectionName).UpdateMany(expression, Builders<T>.Update.Set(valueField, item));
+            GetCollection<T>(collectionName).UpdateMany(expression, Builders<T>.Update.Set(valueField, item));
         }
         public void UpdateValueAsync<T>(Expression<Func<T, bool>> expression, T item, string collectionName = null)
         {
-            GetCollection<T>(null, collectionName).ReplaceOneAsync(expression, item);
+            GetCollection<T>(collectionName).ReplaceOneAsync(expression, item);
         }
         public void UpdateValue<T>(Expression<Func<T, bool>> expression, T item, string collectionName = null, string dbName = null)
         {
-            GetCollection<T>(dbName, collectionName).ReplaceOne(expression, item);
+            GetCollection<T>(collectionName).ReplaceOne(expression, item);
         }
         public void Upsert<T>(PropertyInfo propertyInfo, T item, string collectionName = null)
         {
             var filter = Builders<T>.Filter.Eq(propertyInfo.Name, propertyInfo.GetValue(item));
-            GetCollection<T>(null, collectionName).ReplaceOne(filter, item, new UpdateOptions { IsUpsert = true });
+            GetCollection<T>(collectionName).ReplaceOne(filter, item, new UpdateOptions { IsUpsert = true });
         }
         public async Task<bool> AddOrUpdateAsync<T>(Expression<Func<T, bool>> filter, T item, string dbName = null, string colName = null)
         {
-            return (await GetCollection<T>(dbName, colName).ReplaceOneAsync(filter, item, new UpdateOptions { IsUpsert = true })).IsAcknowledged;
+            return (await GetCollection<T>(colName).ReplaceOneAsync(filter, item, new UpdateOptions { IsUpsert = true })).IsAcknowledged;
         }
         public async Task<bool> DeleteOneAsync<T>(Expression<Func<T, bool>> expression, string dbName = null, string colName = null)
         {
-            return (await GetCollection<T>(dbName, colName).DeleteOneAsync(expression)).IsAcknowledged;
+            return (await GetCollection<T>(colName).DeleteOneAsync(expression)).IsAcknowledged;
         }
         public async Task<List<R>> FindAllInRangeAsync<T, R>(List<object> array, string uniqueKey, Expression<Func<T, R>> projection = null, string dbName = null, string colName = null)
         {
@@ -126,26 +125,22 @@ namespace ReadingIsGood.Infrastructure.MongoDbContext
                 {
                     Projection = Builders<T>.Projection.Expression(projection)
                 };
-            return await (await GetCollection<T>(dbName, colName).FindAsync(Builders<T>.Filter.AnyIn(uniqueKey, array), options)).ToListAsync();
+            return await (await GetCollection<T>(colName).FindAsync(Builders<T>.Filter.AnyIn(uniqueKey, array), options)).ToListAsync();
         }
-        public async Task<List<R>> FindAsync<T, R>(Expression<Func<T, bool>> filter, Expression<Func<T, R>> projection = null, string dbName = null, string colName = null)
+        public async Task<List<R>> FindAsync<T, R>(Expression<Func<T, bool>> filter, string colName = null)
         {
             FindOptions<T, R> options = null;
-            if (projection != null)
-                options = new FindOptions<T, R>
-                {
-                    Projection = Builders<T>.Projection.Expression(projection)
-                };
-            return await (await GetCollection<T>(dbName, colName).FindAsync(filter, options)).ToListAsync();
+
+            return await (await GetCollection<T>(colName).FindAsync(filter, options)).ToListAsync();
         }
         public async Task<long> DeleteManyAsync<T>(Expression<Func<T, bool>> filter, string dbName = null, string colName = null)
         {
-            var result = await GetCollection<T>(dbName, colName).DeleteManyAsync(filter);
+            var result = await GetCollection<T>(colName).DeleteManyAsync(filter);
             return result.DeletedCount;
         }
         public Task InsertManyAsync<T>(List<T> docs, bool isOrdered = false, string dbName = null, string colName = null)
         {
-            return GetCollection<T>(dbName, colName).InsertManyAsync(docs, new InsertManyOptions { IsOrdered = isOrdered });
+            return GetCollection<T>(colName).InsertManyAsync(docs, new InsertManyOptions { IsOrdered = isOrdered });
         }
     }
 }

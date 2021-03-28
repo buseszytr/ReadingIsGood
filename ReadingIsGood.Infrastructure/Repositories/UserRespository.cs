@@ -21,7 +21,7 @@ namespace ReadingIsGood.Infrastructure.Repositories
             mongoDbContext.InsertOne(user, CollectionName.User.ToString());
         }
 
-        public void SaveToken(int userId, string token)
+        public void SaveToken(string userId, string token)
         {
             Expression<Func<User, bool>> filter = x => x.Id == userId;
             mongoDbContext.UpdateOne(filter, x => x.Token, token, CollectionName.User.ToString());
@@ -34,7 +34,7 @@ namespace ReadingIsGood.Infrastructure.Repositories
 
         public User FindById(int userId)
         {
-            var user = mongoDbContext.Find<User>(x => x.Id == userId, null, CollectionName.User.ToString());
+            var user = mongoDbContext.Find<User>(x => x.Id == userId.ToString(), null, CollectionName.User.ToString());
             return user.FirstOrDefault();
         }
     }

@@ -42,7 +42,7 @@ namespace ReadingIsGood.API.Controllers
             return BadRequest(userResponse.Message);
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost]
         public IActionResult AddUser(UserResource userResource)
         {

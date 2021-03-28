@@ -26,13 +26,13 @@ namespace ReadingIsGood.Infrastructure.Services
             }
         }
 
-        public void SaveToken(int userId, string token)
+        public void SaveToken(string userId, string token)
         {
             try
             {
                 userRepository.SaveToken(userId, token);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Logging
             }

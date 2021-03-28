@@ -26,24 +26,28 @@ namespace ReadingIsGood.Infrastructure.Services
                 {
                     var productDetail = await productRepository.GetProductDetailByIdAsync(item.ProductId);
 
-                    if (productDetail.Stock < item.Quantity)
+                    if (productDetail != null)
                     {
-                        if (productDetail.Stock > 0)
+                        if (productDetail.Stock < item.Quantity)
                         {
-                            return new OrderResponse("There are" + productDetail.Stock + "of this" + item.Name + "in stock");
+                            if (productDetail.Stock > 0)
+                            {
+                                return new OrderResponse("There are" + productDetail.Stock + "of this" + item.Name + "in stock");
+                            }
+
+                            return new OrderResponse("The" + item.Name + "is not found in stock");
                         }
 
-                        return new OrderResponse("The" + item.Name + "is not found in stock");
+                        productDetail.Stock = productDetail.Stock - item.Quantity;
+                        productRepository.UpdateProductStock(item.ProductId, productDetail.Stock);
+                        totalPrice = totalPrice + item.Price;
                     }
-
-                    productDetail.Stock = productDetail.Stock - item.Quantity;
-                    productRepository.UpdateProductStock(item.ProductId, productDetail.Stock);
-                    totalPrice = totalPrice + item.Price;
                 }
 
                 order.TotalPrice = totalPrice;
                 order.OrderStatus = OrderStatus.OrderProcessing;
-                order.OrderId = new Guid();
+                Guid orderId = Guid.NewGuid();
+                order.OrderId = orderId;
                 orderRepository.CreateOrderAsync(order);
 
                 return new OrderResponse(order);

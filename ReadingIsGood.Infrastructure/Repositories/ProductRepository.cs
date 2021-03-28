@@ -18,7 +18,7 @@ namespace ReadingIsGood.Infrastructure.Repositories
         }
         public async Task<Product> GetProductDetailByIdAsync(Guid productId)
         {
-            var productDetail = await mongoDbContext.FindAsync<Product, Product>(x => x.ProductId == productId, null, CollectionName.Product.ToString());
+            var productDetail = await mongoDbContext.FindAsync<Product, Product>(x => x.ProductId == productId, CollectionName.Product.ToString());
             return productDetail.FirstOrDefault();
         }
 

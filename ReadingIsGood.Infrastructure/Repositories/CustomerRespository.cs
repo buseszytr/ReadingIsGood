@@ -22,13 +22,13 @@ namespace ReadingIsGood.Infrastructure.Repositories
 
         public async Task<Customer> GetCustomerDetailByIdAsync(Guid customerId)
         {
-            var customer = await mongoDbContext.FindAsync<Customer, Customer>(x => x.CustomerId == customerId, null, CollectionName.Customer.ToString());
+            var customer = await mongoDbContext.FindAsync<Customer, Customer>(x => x.CustomerId == customerId, CollectionName.Customer.ToString());
             return customer.FirstOrDefault();
         }
 
         public async Task<Customer> CheckCustomerCreatedAsync(string email, string phone)
         {
-            var customer = await mongoDbContext.FindAsync<Customer, Customer>(x => x.Email == email || x.Phone == phone, null, CollectionName.Customer.ToString());
+            var customer = await mongoDbContext.FindAsync<Customer, Customer>(x => x.Email == email || x.Phone == phone, CollectionName.Customer.ToString());
             return customer.FirstOrDefault();
         }
     }

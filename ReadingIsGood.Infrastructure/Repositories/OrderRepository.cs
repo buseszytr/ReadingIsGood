@@ -25,13 +25,13 @@ namespace ReadingIsGood.Infrastructure.Repositories
 
         public async Task<List<Order>> GetOrderAsync(Guid customerId)
         {
-            var orderList = await mongoDbContext.FindAsync<Customer, Order>(x => x.CustomerId == customerId, null, CollectionName.Order.ToString());
+            var orderList = await mongoDbContext.FindAsync<Customer, Order>(x => x.CustomerId == customerId,CollectionName.Order.ToString());
             return orderList;
         }
 
         public async Task<Order> GetOrderDetailAsync(Guid orderId)
         {
-            var orderDetail = await mongoDbContext.FindAsync<Order, Order>(x => x.OrderId == orderId, null, CollectionName.Order.ToString());
+            var orderDetail = await mongoDbContext.FindAsync<Order, Order>(x => x.OrderId == orderId,CollectionName.Order.ToString());
             return orderDetail.FirstOrDefault();
         }
 
