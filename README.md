@@ -14,7 +14,7 @@ ReadingIsGood.
 * FluentValidation
 * MongoDB
 * OOP
-* Design Patterns
+* Design,Repository Patterns
 * JWT Token
 * AutoMapper
 
