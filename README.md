@@ -2,12 +2,12 @@
 
 ReadingIsGood.
 
-# Requirements
+## Requirements ##
 
  Visual Studio 2019
 .Net Core 5.0
 
-# Tech Stack
+## Tech Stack ##
 
 1- .Net Core Web API (5.0)
 2- .Net Core Class Library
@@ -18,11 +18,11 @@ ReadingIsGood.
 7- JWT Token
 8- AutoMapper
 
-# More :
+## More ##
 
 Swagger API Documentation & Playground
 
-# Design :
+## Design ##
 
 *This app has three layers that are Domain, Infrastructure, and API.
 
